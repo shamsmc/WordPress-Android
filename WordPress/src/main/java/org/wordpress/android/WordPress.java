@@ -69,7 +69,6 @@ import org.wordpress.android.util.AppLog.T;
 import org.wordpress.android.util.BitmapLruCache;
 import org.wordpress.android.util.CoreEvents;
 import org.wordpress.android.util.CoreEvents.UserSignedOutCompletely;
-import org.wordpress.android.util.CoreEvents.UserSignedOutWordPressCom;
 import org.wordpress.android.util.DateTimeUtils;
 import org.wordpress.android.util.HelpshiftHelper;
 import org.wordpress.android.util.NetworkUtils;
@@ -543,15 +542,12 @@ public class WordPress extends MultiDexApplication {
 
         removeWpComUserRelatedData(getApplicationContext());
 
-        // broadcast an event: wpcom user signed out
-        // TODO: STORES: kill this when we have a signout action in AccountStore
-        EventBus.getDefault().post(new UserSignedOutWordPressCom());
-
         // broadcast an event only if the user is completely signed out (wpcom and other .org sites)
         if (!WPStoreUtils.isSignedInWPComOrHasWPOrgSite(mAccountStore, mSiteStore)) {
             // TODO: STORES: kill this when we have a signout action in AccountStore
             EventBus.getDefault().post(new UserSignedOutCompletely());
         }
+        mDispatcher.dispatch(AccountActionBuilder.newSignOutAction());
     }
 
     @SuppressWarnings("unused")

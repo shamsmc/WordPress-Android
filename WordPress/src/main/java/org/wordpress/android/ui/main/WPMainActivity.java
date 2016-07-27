@@ -56,7 +56,6 @@ import org.wordpress.android.util.AppLog.T;
 import org.wordpress.android.util.AuthenticationDialogUtils;
 import org.wordpress.android.util.CoreEvents;
 import org.wordpress.android.util.CoreEvents.MainViewPagerScrolled;
-import org.wordpress.android.util.CoreEvents.UserSignedOutWordPressCom;
 import org.wordpress.android.util.NetworkUtils;
 import org.wordpress.android.util.ProfilingUtils;
 import org.wordpress.android.util.SelfSignedSSLUtils;
@@ -560,17 +559,15 @@ public class WPMainActivity extends AppCompatActivity implements Bucket.Listener
         AuthenticationDialogUtils.showAuthErrorView(this);
     }
 
-    // TODO: STORES: this must be replaced by onAuthenticationChanged
-    @SuppressWarnings("unused")
-    public void onEventMainThread(UserSignedOutWordPressCom event) {
-        resetFragments();
-    }
-
     @SuppressWarnings("unused")
     @Subscribe
     public void onAuthenticationChanged(OnAuthenticationChanged event) {
         if (event.isError) {
             AuthenticationDialogUtils.showAuthErrorView(this);
+        } else {
+            if (!mAccountStore.hasAccessToken()) {
+                resetFragments();
+            }
         }
     }
 
