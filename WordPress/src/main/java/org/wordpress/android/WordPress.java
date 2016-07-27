@@ -78,7 +78,6 @@ import org.wordpress.android.util.RateLimitedTask;
 import org.wordpress.android.util.SqlUtils;
 import org.wordpress.android.util.VolleyUtils;
 import org.wordpress.android.util.WPActivityUtils;
-import org.wordpress.android.util.WPStoreUtils;
 import org.wordpress.passcodelock.AbstractAppLock;
 import org.wordpress.passcodelock.AppLockManager;
 import org.xmlrpc.android.ApiHelper;
@@ -539,14 +538,7 @@ public class WordPress extends MultiDexApplication {
     public void wordPressComSignOut() {
         // Keep the analytics tracking at the beginning, before the account data is actual removed.
         AnalyticsTracker.track(Stat.ACCOUNT_LOGOUT);
-
         removeWpComUserRelatedData(getApplicationContext());
-
-        // broadcast an event only if the user is completely signed out (wpcom and other .org sites)
-        if (!WPStoreUtils.isSignedInWPComOrHasWPOrgSite(mAccountStore, mSiteStore)) {
-            // TODO: STORES: kill this when we have a signout action in AccountStore
-            EventBus.getDefault().post(new UserSignedOutCompletely());
-        }
         mDispatcher.dispatch(AccountActionBuilder.newSignOutAction());
     }
 

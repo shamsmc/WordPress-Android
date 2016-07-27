@@ -36,6 +36,7 @@ import org.wordpress.android.stores.store.AccountStore;
 import org.wordpress.android.stores.store.AccountStore.OnAccountChanged;
 import org.wordpress.android.stores.store.AccountStore.OnAuthenticationChanged;
 import org.wordpress.android.stores.store.SiteStore;
+import org.wordpress.android.stores.store.SiteStore.OnSiteRemoved;
 import org.wordpress.android.ui.ActivityId;
 import org.wordpress.android.ui.ActivityLauncher;
 import org.wordpress.android.ui.RequestCodes;
@@ -55,6 +56,7 @@ import org.wordpress.android.util.AppLog;
 import org.wordpress.android.util.AppLog.T;
 import org.wordpress.android.util.AuthenticationDialogUtils;
 import org.wordpress.android.util.CoreEvents;
+import org.wordpress.android.util.CoreEvents.UserSignedOutCompletely;
 import org.wordpress.android.util.CoreEvents.MainViewPagerScrolled;
 import org.wordpress.android.util.NetworkUtils;
 import org.wordpress.android.util.ProfilingUtils;
@@ -567,6 +569,10 @@ public class WPMainActivity extends AppCompatActivity implements Bucket.Listener
         } else {
             if (!mAccountStore.hasAccessToken()) {
                 resetFragments();
+                // if user has no .org sites they have completely signed out
+                if (!mSiteStore.hasDotOrgSite()) {
+                    EventBus.getDefault().post(new UserSignedOutCompletely());
+                }
             }
         }
     }
@@ -577,6 +583,14 @@ public class WPMainActivity extends AppCompatActivity implements Bucket.Listener
         if (!WPStoreUtils.isSignedInWPComOrHasWPOrgSite(mAccountStore, mSiteStore)) {
             // User signed out
             ActivityLauncher.showSignInForResult(this);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onSiteRemoved(OnSiteRemoved event) {
+        if (!WPStoreUtils.isSignedInWPComOrHasWPOrgSite(mAccountStore, mSiteStore)) {
+            EventBus.getDefault().post(new UserSignedOutCompletely());
         }
     }
 

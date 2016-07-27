@@ -25,14 +25,11 @@ import org.wordpress.android.models.Blog;
 import org.wordpress.android.networking.ConnectionChangeReceiver;
 import org.wordpress.android.stores.store.AccountStore;
 import org.wordpress.android.stores.store.SiteStore;
-import org.wordpress.android.ui.ActivityLauncher;
 import org.wordpress.android.ui.stats.StatsWidgetProvider;
 import org.wordpress.android.ui.stats.datasets.StatsTable;
 import org.wordpress.android.util.AnalyticsUtils;
-import org.wordpress.android.util.CoreEvents.UserSignedOutCompletely;
 import org.wordpress.android.util.StringUtils;
 import org.wordpress.android.util.ToastUtils;
-import org.wordpress.android.util.WPStoreUtils;
 
 import javax.inject.Inject;
 
@@ -341,13 +338,6 @@ public class BlogPreferencesActivity extends AppCompatActivity {
             WordPress.currentBlog = null;
             mBlogDeleted = true;
             setResult(RESULT_BLOG_REMOVED);
-
-            // TODO: STORES: this shouldn't exist, WPMainActivity should listen for OnSiteChanged() and check
-            // mAccountStore.isSignedIn() there
-            // If the last blog is removed and the user is not signed in wpcom, broadcast a UserSignedOut event
-            if (!WPStoreUtils.isSignedInWPComOrHasWPOrgSite(mAccountStore, mSiteStore)) {
-                EventBus.getDefault().post(new UserSignedOutCompletely());
-            }
 
             // Checks for stats widgets that were synched with a blog that could be gone now.
             StatsWidgetProvider.refreshAllWidgets(this);
