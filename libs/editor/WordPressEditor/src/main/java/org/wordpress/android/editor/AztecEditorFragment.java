@@ -10,7 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -403,7 +402,8 @@ public class AztecEditorFragment extends EditorFragmentAbstract implements OnIme
                 attrs.addAttribute("", "data-wpid", "data-wpid", "string", id);
                 attrs.addAttribute("", "src", "src", "string", safeMediaUrl);
 
-                Bitmap bitmap = BitmapFactory.decodeFile(safeMediaUrl);
+                // load a correctly scaled bitmap
+                Bitmap bitmap = Utils.decodeFileAs160dp(safeMediaUrl);
 
                 content.insertMedia(new BitmapDrawable(getResources(), bitmap), attrs);
 

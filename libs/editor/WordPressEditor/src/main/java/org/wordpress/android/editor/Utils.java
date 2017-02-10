@@ -5,7 +5,10 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.DisplayMetrics;
 import android.util.Patterns;
 
 import org.wordpress.android.util.AppLog;
@@ -243,5 +246,32 @@ public class Utils {
         if (data == null || data.getItemCount() <= 0) return null;
         String clipText = String.valueOf(data.getItemAt(0).getText());
         return Patterns.WEB_URL.matcher(clipText).matches() ? clipText : null;
+    }
+
+    /**
+     * Loads a {@link Bitmap} while setting the input density to DisplayMetrics.DENSITY_DEFAULT (160dp). That means the
+     *  bitmap gets scaled to the device's density.
+     *
+     * @param pathName complete path name for the file to be decoded.
+     * @return the scaled decoded bitmap, or null if the image data could not be
+     *         decoded.
+     */
+    public static Bitmap decodeFileAs160dp(String pathName) {
+        // Apparently, BitmapFactory.decodeFile marks the bitmap with the device's default density so, we need to
+        //  set the correct input density (which is of cource 160) while decoding it
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inDensity = DisplayMetrics.DENSITY_DEFAULT;
+        return BitmapFactory.decodeFile(pathName, options);
+    }
+
+    /**
+     * Sets the bitmap's density to the Android default of 160dp.
+     *
+     * @param bitmap the bitmap to set the density of
+     * @return the same bitmap but only with its density set to 160dp
+     */
+    public static Bitmap adjustToDensity160dp(Bitmap bitmap) {
+        bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
+        return bitmap;
     }
 }
